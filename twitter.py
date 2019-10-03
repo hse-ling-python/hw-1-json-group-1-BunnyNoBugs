@@ -2,6 +2,7 @@ import json
 from pprint import pprint
 from collections import Counter
 from string import punctuation
+import re
 
 twitter = []
 for line in open('hw_3_twitter.json'):
@@ -52,11 +53,19 @@ for line in open('hw_3_twitter.json'):
 # print('Топ-10 самых частых слов в твитах на английском языке: {top_ten_words}'.format(
 #     top_ten_words=', '.join([word[0] for word in frequency_dictionary.most_common(10)])))
 
-followers_numbers = []
+# followers_numbers = []
+# for tweet in twitter:
+#     if len(tweet) > 1:
+#         if not (tweet['user']['name'], tweet['user']['followers_count']) in followers_numbers:
+#             followers_numbers.append((tweet['user']['name'], tweet['user']['followers_count']))
+# followers_numbers.sort(key=lambda i: i[1], reverse=True)
+# print('Топ-10 пользователей по количеству подписчиков: {top_ten_followers_numbers}'.format(
+#     top_ten_followers_numbers=', '.join([followers_numbers[i][0] for i in range(10)])))
+
+sources = []
 for tweet in twitter:
     if len(tweet) > 1:
-        if not (tweet['user']['name'], tweet['user']['followers_count']) in followers_numbers:
-            followers_numbers.append((tweet['user']['name'], tweet['user']['followers_count']))
-followers_numbers.sort(key=lambda i: i[1], reverse=True)
-print('Топ-10 пользователей по количеству подписчиков: {top_ten_followers_numbers}'.format(
-    top_ten_followers_numbers=', '.join([followers_numbers[i][0] for i in range(10)])))
+        sources.append(re.search('<.+?>(.+?)<.+>', tweet['source']).group(1))
+sources = Counter(sources)
+print('Топ-10 самых популярных источников твитов: {top_ten_sources}'.format(
+    top_ten_sources=', '.join(source[0] for source in sources.most_common(10))))
